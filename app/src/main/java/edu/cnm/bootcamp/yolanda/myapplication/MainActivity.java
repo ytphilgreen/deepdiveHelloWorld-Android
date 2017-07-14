@@ -1,7 +1,10 @@
 package edu.cnm.bootcamp.yolanda.myapplication;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -9,5 +12,18 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        Button btnMainActivity = (Button)findViewById(R.id.btnMainActivity);
+        btnMainActivity.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+               launchAppActivity();
+            }
+        });
+    }
+
+    private void launchAppActivity() {
+        Intent intent = new Intent(this,AppCompatActivity.class);
+        startActivity(intent);
+        finish();
     }
 }
