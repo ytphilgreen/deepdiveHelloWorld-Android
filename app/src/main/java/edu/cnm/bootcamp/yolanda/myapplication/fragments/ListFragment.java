@@ -13,8 +13,16 @@ import android.widget.Button;
 import android.widget.ListView;
 
 import java.lang.reflect.Array;
+import java.util.List;
 
+import edu.cnm.bootcamp.yolanda.myapplication.Adapters.ImageListAdapter;
 import edu.cnm.bootcamp.yolanda.myapplication.R;
+import edu.cnm.bootcamp.yolanda.myapplication.api.API;
+import edu.cnm.bootcamp.yolanda.myapplication.objects.GalleryResponse;
+import edu.cnm.bootcamp.yolanda.myapplication.objects.Image;
+import rx.SingleSubscriber;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -68,19 +76,29 @@ public class ListFragment extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        String[] strings = new String[]{
-                "Frist",
-                "Second",
-                "Thrid",
-                "Fourth"
-        };
+        API.subredditGallery("pics")
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new SingleSubscriber<GalleryResponse>() {
+                    @Override
+                    public void onSuccess(GalleryResponse value) {
+                        List<Image> data= value.getData();
+                        if (data != null){
+                            ImageListAdapter adapter = new ImageListAdapter(
+                                    getContext(),
+                                    data
+                            );
+                            mListView.setAdapter(adapter);
+                        }
 
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(
-                getContext(),
-                android.R.layout.simple_list_item_1,
-                strings
-        );
-        mListView.setAdapter(adapter);
+                    }
+
+                    @Override
+                    public void onError(Throwable error) {
+                        error.printStackTrace();
+                    }
+                });
+
     }
     @Override
     public void onAttach(Context context) {
